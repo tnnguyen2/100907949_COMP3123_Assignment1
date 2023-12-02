@@ -14,8 +14,15 @@ employeeRoutes.get("/employees", async (req, res) => {
 })
 
 employeeRoutes.post('/employees', async (req, res) => {
+    const {email} = req.body
     //Creates new employee
     try {
+        const existingUser = await employeeModel.findOne({ email });
+
+        if (existingUser) {
+            // If username exists, send a message indicating it's already taken
+            return res.status(400).json({ message: 'Email is already in use' });
+        }
         const newEmployee = new employeeModel({
             ...req.body
         });

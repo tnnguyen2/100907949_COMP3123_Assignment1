@@ -4,8 +4,15 @@ const userModel = require('../models/userModel')
 let userRoutes = express.Router()
 
 userRoutes.post('/signup', async (req, res) => {
+    const{ username } = req.body
     //Create new user
     try {
+        const existingUser = await userModel.findOne({ username });
+
+        if (existingUser) {
+            // If username exists, send a message indicating it's already taken
+            return res.status(400).json({ message: 'Username is already taken' });
+        }
         const newUser = new userModel({
             ...req.body
         });
